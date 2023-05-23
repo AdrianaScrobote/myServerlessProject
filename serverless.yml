@@ -1,0 +1,39 @@
+# Welcome to Serverless!
+#
+# This file is the main config file for your service.
+# It's very minimal at this point and uses default values.
+# You can always add more config options for more control.
+# We've included some commented out config examples here.
+# Just uncomment any of them to get that config option.
+#
+# For full config options, check the docs:
+#    docs.serverless.com
+#
+# Happy Coding!
+
+service: myserverlessproject
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  profile: serverlessUser
+
+plugins:
+  - serverless-s3-sync
+
+custom:
+  s3Sync:
+    - bucketName: my-new-bucket-testando-adriana-aaa12
+      localDir: UploadData
+
+functions:
+  hello:
+    handler: handler.hello
+
+resources:
+  Resources:
+    DemoBucketUpload:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: my-new-bucket-testando-adriana-aaa12
