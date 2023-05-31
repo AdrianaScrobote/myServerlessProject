@@ -18,9 +18,22 @@ provider:
   name: aws
   runtime: nodejs12.x
   profile: serverlessUser
+  region: us-east-1
+  environment:
+    tableName: ${self:custom.tableName}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:*
+          Resource: "*"
 
 plugins:
   - serverless-s3-sync
+
+package:
+  individually: true
 
 custom:
   tableName: player-points
@@ -33,10 +46,18 @@ functions:
     handler: handler.hello
 
   getUser:
-    handler: lambdas/getUser.handler
+    handler: lambdas/endpoints/getUser.handler
     events:
       - http:
           path: get-user/{ID}
+          method: GET
+          cors: true
+
+  getPlayerScore:
+    handler: lambdas/endpoints/getPlayerScore.handler
+    events:
+      - http:
+          path: get-player-score/{ID}
           method: GET
           cors: true
 
