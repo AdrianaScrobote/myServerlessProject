@@ -16,7 +16,7 @@ frameworkVersion: "3"
 
 provider:
   name: aws
-  runtime: nodejs12.x
+  runtime: nodejs18.x
   profile: serverlessUser
   region: us-east-1
   environment:
@@ -61,12 +61,20 @@ functions:
           method: GET
           cors: true
 
+  createPlayerScore:
+    handler: lambdas/endpoints/createPlayerScore.handler
+    events:
+      - http:
+          path: create-player-score/{ID}
+          method: POST
+          cors: true
+
 resources:
   Resources:
     DemoBucketUpload:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: my-new-bucket-testando-adriana-aaa12
+        BucketName: my-new-bucket-testando-adriana-aaa123
     MyDynamoDbTable:
       Type: AWS::DynamoDB::Table
       Properties:

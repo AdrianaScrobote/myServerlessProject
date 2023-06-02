@@ -1,0 +1,22 @@
+{
+  "name": "myserverlessproject",
+  "version": "1.0.0",
+  "description": "",
+  "main": "handler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AdrianaScrobote/myServerlessProject.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AdrianaScrobote/myServerlessProject/issues"
+  },
+  "homepage": "https://github.com/AdrianaScrobote/myServerlessProject#readme",
+  "dependencies": {
+    "aws-sdk": "^2.1389.0"
+  }
+}
