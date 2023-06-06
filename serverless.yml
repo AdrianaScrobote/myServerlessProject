@@ -21,12 +21,14 @@ provider:
   region: us-east-1
   environment:
     tableName: ${self:custom.tableName}
+    bucketName: ${self:custom.bucketName}
   iam:
     role:
       statements:
         - Effect: Allow
           Action:
             - dynamodb:*
+            - s3:*
           Resource: "*"
 
 plugins:
@@ -37,8 +39,9 @@ package:
 
 custom:
   tableName: player-points
+  bucketName: my-new-bucket-testando-adriana-aaa13
   s3Sync:
-    - bucketName: my-new-bucket-testando-adriana-aaa12
+    - bucketName: ${self:custom.bucketName}
       localDir: UploadData
 
 functions:
@@ -69,12 +72,28 @@ functions:
           method: POST
           cors: true
 
+  createFile:
+    handler: lambdas/endpoints/createFile.handler
+    events:
+      - http:
+          path: create-file/{fileName}
+          method: POST
+          cors: true
+
+  getFile:
+    handler: lambdas/endpoints/getFile.handler
+    events:
+      - http:
+          path: get-file/{fileName}
+          method: GET
+          cors: true
+
 resources:
   Resources:
     DemoBucketUpload:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: my-new-bucket-testando-adriana-aaa123
+        BucketName: ${self:custom.bucketName}
     MyDynamoDbTable:
       Type: AWS::DynamoDB::Table
       Properties:
