@@ -22,6 +22,7 @@ provider:
   environment:
     tableName: ${self:custom.tableName}
     bucketName: ${self:custom.bucketName}
+    tableNameWebsocket: ${self:custom.tableNameWebsocket}
   iam:
     role:
       statements:
@@ -62,6 +63,7 @@ package:
 
 custom:
   tableName: player-points
+  tableNameWebsocket: WebsocketUsers
   bucketName: my-new-bucket-testando-adriana-aaa13
   s3Sync:
     - bucketName: ${self:custom.bucketName}
@@ -120,6 +122,30 @@ functions:
           method: POST
           cors: true
 
+  websocket-connect:
+    handler: lambdas/websockets/connect.handler
+    events:
+      - websocket:
+          route: $connect
+
+  websocket-disconnect:
+    handler: lambdas/websockets/disconnect.handler
+    events:
+      - websocket:
+          route: $disconnect
+
+  websocket-default:
+    handler: lambdas/websockets/default.handler
+    events:
+      - websocket:
+          route: $default
+
+  websocket-message:
+    handler: lambdas/websockets/message.handler
+    events:
+      - websocket:
+          route: message
+
   proxy:
     handler: lambdas/endpoints/proxy.handler
     events:
@@ -150,6 +176,18 @@ resources:
           - AttributeName: ID
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
+    WebsocketUserTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.tableNameWebsocket}
+        AttributeDefinitions:
+          - AttributeName: ID
+            AttributeType: S
+        KeySchema:
+          - AttributeName: ID
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+
     myAssumeRole:
       Type: AWS::IAM::Role
       Properties:
