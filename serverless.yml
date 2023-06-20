@@ -33,6 +33,7 @@ provider:
             - ses:*
             - sns:SetSMSAttributes
             - sns:Publish
+            - comprehend:*
           Resource: "*"
   apiGateway:
     apiKeys:
@@ -153,6 +154,14 @@ functions:
     events:
       - http:
           path: send-sms
+          method: POST
+          cors: true
+
+  analyse:
+    handler: lambdas/endpoints/analyse.handler
+    events:
+      - http:
+          path: analyse
           method: POST
           cors: true
 
