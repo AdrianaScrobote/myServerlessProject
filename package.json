@@ -18,6 +18,7 @@
   "homepage": "https://github.com/AdrianaScrobote/myServerlessProject#readme",
   "dependencies": {
     "aws-sdk": "^2.1389.0",
-    "axios": "^1.4.0"
+    "axios": "^1.4.0",
+    "lambda-hooks": "^0.2.1"
   }
 }
