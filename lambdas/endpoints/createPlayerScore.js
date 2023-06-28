@@ -1,8 +1,18 @@
 const Responses = require("../common/API_responses");
 const Dynamo = require("../common/Dynamo");
-const { withHooks } = require("../common/hooks");
+const { withHooks, hooksWithValidation } = require("../common/hooks");
+const yup = require("yup");
 
 const tableName = process.env.tableName;
+
+const bodySchema = yup.object().shape({
+  name: yup.string().required(),
+  score: yup.number().required(),
+});
+
+const pathSchema = yup.object().shape({
+  ID: yup.string().required(),
+});
 
 const handler = async (event) => {
   if (!event.pathParameters || !event.pathParameters.ID) {
@@ -26,4 +36,5 @@ const handler = async (event) => {
   });
 };
 
-exports.handler = withHooks(handler);
+// exports.handler = withHooks(handler);
+exports.handler = hooksWithValidation({ bodySchema, pathSchema })(handler);
