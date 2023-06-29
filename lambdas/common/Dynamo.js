@@ -54,6 +54,24 @@ const Dynamo = {
 
     return documentClient.delete(params).promise();
   },
+
+  update: async ({
+    tableName,
+    primaryKey,
+    primaryKeyValue,
+    updateKey,
+    updateValue,
+  }) => {
+    const params = {
+      TableName: tableName,
+      Key: {
+        [primaryKey]: primaryKeyValue,
+      },
+      UpdateExpression: `set ${updateKey} = :updateValue`,
+      ExpressionAttributeValues: { ":updateValue": updateValue },
+    };
+    return documentClient.update(params).promise();
+  },
 };
 
 module.exports = Dynamo;
