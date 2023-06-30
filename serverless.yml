@@ -19,9 +19,11 @@ provider:
   runtime: nodejs18.x
   profile: serverlessUser
   region: us-east-1
+  stage: dev
   environment:
     tableName: ${self:custom.tableName}
     bucketName: ${self:custom.bucketName}
+    signupTableName: ${self:custom.signupTableName}
     tableNameWebsocket: ${self:custom.tableNameWebsocket}
   iam:
     role:
@@ -35,6 +37,8 @@ provider:
             - sns:Publish
             - comprehend:*
           Resource: "*"
+
+  # comentar seção se for utilizar step functions
   apiGateway:
     apiKeys:
       - free:
@@ -60,17 +64,31 @@ provider:
 
 plugins:
   - serverless-s3-sync
+  - serverless-step-functions
 
 package:
   individually: true
 
 custom:
   tableName: player-points
+  signupTableName: signup-table-name
   tableNameWebsocket: WebsocketUsers
   bucketName: my-new-bucket-testando-adriana-aaa13
   s3Sync:
     - bucketName: ${self:custom.bucketName}
       localDir: UploadData
+
+stepFunctions:
+  validate: true
+  stateMachines:
+    reminderEmail:
+      name: reminderEmail
+      events:
+        - http:
+            path: signup-with-reminders
+            method: POST
+            cors: true
+      definition: ${file(./stepFunction.yml)}
 
 functions:
   hello:
@@ -196,6 +214,15 @@ functions:
               paths:
                 proxy: true
 
+  addSignup:
+    handler: lambdas/stepFunctionsLambdas/addSignup.handler
+
+  getSignup:
+    handler: lambdas/stepFunctionsLambdas/getSignup.handler
+
+  sendReminderEmail:
+    handler: lambdas/stepFunctionsLambdas/sendReminderEmail.handler
+
 resources:
   Resources:
     DemoBucketUpload:
@@ -213,6 +240,19 @@ resources:
           - AttributeName: ID
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
+
+    MyEmailSignupTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.signupTableName}
+        AttributeDefinitions:
+          - AttributeName: ID
+            AttributeType: S
+        KeySchema:
+          - AttributeName: ID
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+
     WebsocketUserTable:
       Type: AWS::DynamoDB::Table
       Properties:
