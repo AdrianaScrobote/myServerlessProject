@@ -25,6 +25,8 @@ provider:
     bucketName: ${self:custom.bucketName}
     signupTableName: ${self:custom.signupTableName}
     tableNameWebsocket: ${self:custom.tableNameWebsocket}
+    imageUploadBucket: ${self:custom.imageUploadBucket}
+    region: ${self:provider.region}
   iam:
     role:
       statements:
@@ -72,6 +74,7 @@ package:
 custom:
   tableName: player-points
   signupTableName: signup-table-name
+  imageUploadBucket: my-image-upload-bucket-demo-sms
   tableNameWebsocket: WebsocketUsers
   bucketName: my-new-bucket-testando-adriana-aaa13
   s3Sync:
@@ -223,12 +226,27 @@ functions:
   sendReminderEmail:
     handler: lambdas/stepFunctionsLambdas/sendReminderEmail.handler
 
+  imageUpload:
+    handler: lambdas/endpoints/imageUpload.handler
+    events:
+      - http:
+          path: image-upload
+          method: POST
+          cors: true
+
 resources:
   Resources:
     DemoBucketUpload:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: ${self:custom.bucketName}
+    ImageUploadBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.imageUploadBucket}
+        OwnershipControls:
+          Rules:
+            - ObjectOwnership: BucketOwnerEnforced
     MyDynamoDbTable:
       Type: AWS::DynamoDB::Table
       Properties:
