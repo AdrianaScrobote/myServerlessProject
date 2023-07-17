@@ -246,7 +246,7 @@ resources:
         BucketName: ${self:custom.imageUploadBucket}
         OwnershipControls:
           Rules:
-            - ObjectOwnership: BucketOwnerEnforced
+            - ObjectOwnership: "BucketOwnerPreferred"
     MyDynamoDbTable:
       Type: AWS::DynamoDB::Table
       Properties:

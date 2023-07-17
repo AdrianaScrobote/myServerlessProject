@@ -1,5 +1,5 @@
 const Responses = require("../common/API_responses");
-const fileTypeFromBuffer = require("file-type");
+const fileType = require("file-type");
 const { v4: uuid } = require("uuid");
 const AWS = require("aws-sdk");
 
@@ -15,23 +15,23 @@ exports.handler = async (event) => {
       return Responses._400({ message: "incorrect body on request" });
     }
 
-    if (allowedMimes.includes(body.mime)) {
+    if (!allowedMimes.includes(body.mime)) {
       return Responses._400({ message: "mime is not allowed" });
     }
 
-    let imageData = body.message;
+    let imageData = body.image;
 
-    if (body.image.substr(0, 7) === "base64") {
+    if (body.image.substr(0, 7) === "base64,") {
       imageData = body.image.substr(7, body.image.length);
     }
 
     const buffer = Buffer.from(imageData, "base64");
 
-    const fileInfo = await fileTypeFromBuffer.fromBuffer(buffer);
+    const fileInfo = await fileType.fromBuffer(buffer);
 
     const detectedExt = fileInfo.ext;
 
-    detectedMime = fileInfo.mime;
+    const detectedMime = fileInfo.mime;
 
     if (detectedMime !== body.mime) {
       return Responses._400({ message: "mime types dont match" });
@@ -42,17 +42,17 @@ exports.handler = async (event) => {
 
     console.log(`writing image to bucket called ${key}`);
 
-    await s3
-      .putObject({
-        Body: buffer,
-        Key: key,
-        ContentType: body.mime,
-        Bucket: process.env.ImageUploadBucket,
-        ACL: "public-read",
-      })
-      .promise();
+    const params = {
+      Bucket: process.env.imageUploadBucket,
+      Body: buffer,
+      Key: key,
+    };
 
-    const url = `https://${process.env.ImageUploadBucket}.s3-${process.env.region}.amazon.com/${key}`;
+    await s3.putObject(params).promise();
+
+    const url = `https://${process.env.imageUploadBucket}.s3.amazonaws.com/${key}`;
+
+    console.log("url", url);
 
     return Responses._200({
       imageURL: url,
