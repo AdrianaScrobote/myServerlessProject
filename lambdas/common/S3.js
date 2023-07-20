@@ -35,6 +35,22 @@ const S3 = {
 
     return newData;
   },
+  async writeWithContentType(data, fileName, bucket, contentType) {
+    const params = {
+      Bucket: bucket,
+      Body: Buffer.isBuffer(data) ? data : JSON.stringify(data),
+      Key: fileName,
+      ContentType: contentType,
+    };
+
+    const newData = await s3Client.putObject(params).promise();
+
+    if (!newData) {
+      throw Error("there was an error writing the file");
+    }
+
+    return newData;
+  },
 };
 
 module.exports = S3;
