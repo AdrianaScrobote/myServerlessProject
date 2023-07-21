@@ -307,3 +307,20 @@ resources:
                   - apigateway.amazonaws.com
               Action:
                 - sts:AssumeRole
+    CognitoUserPool:
+      Type: AWS::Cognito::UserPool
+      Properties:
+        UserPoolName: ${self:provider.stage}-user-pool
+        UsernameAttributes:
+          - email
+        AutoVerifiedAttributes:
+          - email
+    CognitoUserPoolClient:
+      Type: AWS::Cognito::UserPoolClient
+      Properties:
+        ClientName: ${self:provider.stage}-user-pool-client
+        UserPoolId:
+          Ref: CognitoUserPool
+        ExplicitAuthFlows:
+          - ADMIN_NO_SRP_AUTH
+        GenerateSecret: false
